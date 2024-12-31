@@ -40,19 +40,21 @@ async function authenticateAnyUser(req, res, next) {
         }
 
         req.authUser = user;
+
         switch (user.type) {
-            case 1: // Admin
+            case 'Admin':
                 authenticateAdmin(req, res, next);
                 break;
-            case 2: // User
+            case 'User': 
                 authenticateUser(req, res, next);
                 break;
             default:
-                services.prepareResponse(
-                    HttpStatus.UNAUTHORIZED,
-                    Msg.UNAUTHORIZED_ACCESS
-                )
-                break;
+                return res.send(
+                    services.prepareResponse(
+                        HttpStatus.UNAUTHORIZED,
+                        Msg.UNAUTHORIZED_ACCESS
+                    )
+                );
         }
 
     } catch (error) {
@@ -65,14 +67,12 @@ async function authenticateAnyUser(req, res, next) {
     }
 };
 
-
 /**
  * Verify jwt token for admin authentication
  * 
  * @param {string} token -Token
  * @return
  */
-
 async function authenticateAdmin(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -111,7 +111,7 @@ async function authenticateAdmin(req, res, next) {
             );
         }
 
-        if (user.type === "User") {
+        if ((user.type !== "Admin")) {
             return res.send(
                 services.prepareResponse(
                     HttpStatus.UNAUTHORIZED,
@@ -139,7 +139,6 @@ async function authenticateAdmin(req, res, next) {
  * @param {string} token -Token
  * @return
  */
-
 async function authenticateUser(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -178,7 +177,7 @@ async function authenticateUser(req, res, next) {
             );
         }
 
-        if (user.type === "Admin") {
+        if (user.type !== "User") {
             return res.send(
                 services.prepareResponse(
                     HttpStatus.UNAUTHORIZED,

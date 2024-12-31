@@ -35,7 +35,7 @@ router.get(
  * This route update the detail of an existing category
  */
 router.put(
-    "/update/category/:id",
+    "/update/category/:id",authenticateAdmin,
     param("id")
         .isMongoId()
         .withMessage(Msg.INVALID_CATEGORY_ID),
@@ -47,5 +47,17 @@ router.put(
         .withMessage(Msg.INVALID_NAME),
     controller.updateCategory
 );
+
+/**
+ * This route delete a specific category
+ */
+router.delete(
+    "/delete/category/:id",authenticateAdmin,
+    param("id")
+        .isMongoId()
+        .withMessage(Msg.INVALID_CATEGORY_ID),
+    controller.deleteCategory
+);
+
 
 module.exports = router;

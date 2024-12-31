@@ -1,15 +1,23 @@
 "use strict";
 
 const express = require("express");
+const cors = require('cors');
 const http = require("http");
 require("dotenv").config(); 
 const swaggerUi = require("swagger-ui-express");
 const { swaggerSpec } = require("./helpers/swaggerConnection");
 const { dbConnect } = require("./config/dbConnection");
-
 const app = express();
+
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use(cors({
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Swagger documentation setup
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

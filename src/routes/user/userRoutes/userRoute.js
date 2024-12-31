@@ -5,12 +5,13 @@ const router = express.Router();
 const controller = require("../../../controllers/user/userController");
 const Msg = require("../../../helpers/localization");
 const { body } = require("express-validator");
+const { authenticateUser } = require("../../../helpers/middleware");
 
 /**
  * This route retrieve the user profile
  */
 router.get(
-    "/profile",
+    "/profile",authenticateUser,
     controller.getMyProfile
 );
 
@@ -18,7 +19,7 @@ router.get(
  * This route update the user profile
  */
 router.put(
-    "/update/profile",
+    "/update/profile",authenticateUser,
     body("firstName")
         .optional()
         .notEmpty()

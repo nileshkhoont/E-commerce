@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
     type: {
         type: String,
-        enum: ['Admin', 'Seller', 'User'],
+        enum: ["Admin", "Seller", "User"],
         required: true
     },
     firstName: {
@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        enum: ['Male', 'Female', 'Other'],
+        enum: ["Male", "Female", "Other"],
         required: true
     },
     isDeleted: {
@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Active', 'Inactive'],
+        enum: ["Active", "Inactive"],
         default: "Active",
     },
     createdAt: Date,

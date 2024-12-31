@@ -175,22 +175,25 @@ module.exports = {
 
             const categoryId = req.params.id;
 
-            const category = await Category.findById(categoryId);
+            // Soft delete by updating `isActive` to false
+            const category = await Category.findOneAndUpdate(
+                { _id: categoryId, isActive: true },
+                { $set: { isActive: false } },
+                { new: true }
+            );
+
             if (!category) {
-                return res.send(
+                return res.status(HttpStatus.NOT_FOUND).send(
                     services.prepareResponse(
                         HttpStatus.NOT_FOUND,
                         Msg.CATEGORY_NOT_FOUND
                     )
                 );
             }
-            
-            category.isActive = false;
-            await category.save();
 
-            return res.send(
+            return res.status(HttpStatus.OK).send(
                 services.prepareResponse(
-                    HttpStatus.NO_CONTENT,
+                    HttpStatus.OK,
                     Msg.CATEGORY_DELETED
                 )
             );

@@ -167,6 +167,7 @@ module.exports = {
             )
 
         } catch (error) {
+            console.error(error)
             return res.send(
                 services.prepareResponse(
                     HttpStatus.INTERNAL_SERVER_ERROR,

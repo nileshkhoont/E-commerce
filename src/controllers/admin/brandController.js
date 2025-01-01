@@ -1,46 +1,68 @@
 "use strict";
 
-const Category = require("../../models/category");
+const Brand = require("../../models/brand");
 const services = require("../../helpers/index");
 const Msg = require("../../helpers/localization");
 const { HttpStatus } = require("../../errors/code");
+const imageMimeType = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
 
 module.exports = {
     /**
-     * This function will create a new category with the provided information
+     * This function will create a new brand with the provided information
      * 
-     * @param {string} req.body.name -The name of the category
-     * @returns Category create and return new category id
+     * @param {string} req.body.name -The name of the brand
+     * @param {string} req.body.image -The image of the brand
+     * @returns Brand create and return new brand id
      */
-    addCategory: async function (req,res){
+    addBrand: async function (req,res) {
         try {
-            if (services.hashValidatorErrors(req, res)) {
+            if (services.hashValidatorErrors(req,res)) {
                 return;
             }
-            
-            const categoryExist = await Category.findOne({ name: req.body.name });
-            if (categoryExist) {
+
+            const brandExist = await Brand.findOne({ name: req.body.name });
+            if (brandExist) {
                 return res.send(
                     services.prepareResponse(
                         HttpStatus.BAD_REQUEST,
-                        Msg.CATEGORY_EXISTS
+                        Msg.BRAND_EXISTS
                     )
                 );
             }
 
-            const categoryDetail = {
-                name: req.body.name,
+            if (!req.files || !req.files?.image) {
+                return res.send(
+                    services.prepareResponse(
+                        HttpStatus.BAD_REQUEST,
+                        Msg.IMAGE_IS_REQUIRED
+                    )
+                )
+            }
+
+            if (!imageMimeType.includes(req.files.image.mimetype)) {
+                return res.send(
+                    services.prepareResponse(
+                        HttpStatus.BAD_REQUEST,
+                        Msg.INVALID_IMAGE_TYPE
+                    )
+                )
+            }
+
+            const brandImage = await services.imageUpload(req.files.image, "brand-logo")
+            const brandDetail = {
+                name:req.body.name,
+                image: brandImage
             };
 
-            const newCategory = await Category.create(categoryDetail);
+            const newBrand = await Brand.create(brandDetail);
             return res.send(
                 services.prepareResponse(
                     HttpStatus.CREATED,
-                    Msg.CATEGORY_CREATED,
-                    { id: newCategory.id }
+                    Msg.BRAND_CREATED,
+                    { id: newBrand.id }
                 )
             );
-            
+
         } catch (error) {
             return res.send(
                 services.prepareResponse(
@@ -52,18 +74,18 @@ module.exports = {
     },
 
     /**
-     * This function will list of all category
+     * This function will list of all brand
      * 
      * @param {string} req.query.search -The search term
      * @param {number} req.query.page -The page number
      * @param {number} req.query.perPage -The number of record per page
      * @param {string} req.query.sortBy -Field to sort by.
      * @param {string} req.query.sortOrder -Sort order: 'asc' or 'desc'.
-     * @returns Return All category
+     * @returns Return All brand
      */
-    listCategory: async function (req,res) {
+    listBrand: async function (req,res) {
         try {
-            if (services.hashValidatorErrors(req, res)) {
+            if (services.hashValidatorErrors(req,res)) {
                 return;
             }
 
@@ -76,17 +98,17 @@ module.exports = {
                     { name: { $regex: req.query.search, $options: 'i' } },
                 ];
             }
-
+            
             if (req.query.sortBy) {
                 sort[req.query.sortBy] = req.query.sortOrder === 'desc' ? -1 : 1;
             }
 
-            const list = await Category.find(query)
+            const list = await Brand.find(query)
                 .sort(sort)
                 .skip(skip)
                 .limit(perPage);
-            
-            const total = await Category.countDocuments(query);
+        
+            const total = await Brand.countDocuments(query);
             const totalPages = Math.ceil(total / perPage);
 
             return res.send(
@@ -94,7 +116,7 @@ module.exports = {
                     HttpStatus.OK,
                     Msg.SUCCESS,
                     {
-                        category: list,
+                        brand: list,
                         page: page + 1,
                         perPage: perPage,
                         totalRecords: total,
@@ -114,43 +136,64 @@ module.exports = {
     },
 
     /**
-     * This function will update a category with the provided information
-     * 
-     * @param {string} req.params.id -The id of the category
-     * @param {string} req.body.name -The name of the category
-     * @returns Update category and return new id
+     * This function will update a brand with the provided information
+     *
+     * @param {string} req.params.id -The id of the brand
+     * @param {string} req.body.name -The name of the brand
+     * @param {string} req.body.image -The image of the brand
+     * @returns Update brand and return new id
      */
-    updateCategory: async function (req,res) {
+    updateBrand: async function (req, res) {
         try {
             if (services.hashValidatorErrors(req, res)) {
                 return;
             }
+    
+            const brandId = req.params.id;
 
-            const categoryId = req.params.id;
-
-            const category = await Category.findById(categoryId);
-            if (!category) {
+            const brand = await Brand.findById(brandId);
+            if (!brand) {
                 return res.send(
                     services.prepareResponse(
                         HttpStatus.NOT_FOUND,
-                        Msg.CATEGORY_NOT_FOUND
+                        Msg.BRAND_NOT_FOUND
                     )
                 );
             }
+    
+            let imagePath = brand.image;
+            if (req.files && req.files.image) {
+                if (!imageMimeType.includes(req.files.image.mimetype)) {
+                    return res.send(
+                        services.prepareResponse(
+                            HttpStatus.BAD_REQUEST,
+                            Msg.INVALID_IMAGE_TYPE
+                        )
+                    );
+                }
+                if (imagePath) await services.deleteImage(imagePath);
+                imagePath = await services.imageUpload(req.files.image, 'brand-logo');
+            }
+    
+            const brandDetail = {
+                name: req.body.name,
+                image: imagePath
+            };
 
-            const updatedCategory = await Category.findByIdAndUpdate(
-                categoryId,
-                { name: req.body.name },
-                { new: true } 
+            const updatedBrand = await Brand.findByIdAndUpdate(
+                brandId,
+                brandDetail,
+                { new: true }
             );
 
             return res.send(
                 services.prepareResponse(
                     HttpStatus.OK,
-                    Msg.CATEGORY_UPDATED,
-                    { id: updatedCategory.id }
+                    Msg.BRAND_UPDATED,
+                    { id: updatedBrand.id }
                 )
             );
+    
         } catch (error) {
             return res.send(
                 services.prepareResponse(
@@ -162,39 +205,38 @@ module.exports = {
     },
 
     /**
-     * This function will delete category by id
+     * This function will delete brand by id
      * 
-     * @param {string} req.params.id -The id of the category
-     * @returns Delete category by id
+     * @param {string} req.params.id -The id of the brand
+     * @returns Delete brand by id
      */
-    deleteCategory : async function (req,res) {
+    deleteBrand : async function (req,res) {
         try {
             if (services.hashValidatorErrors(req, res)) {
                 return;
             }
 
-            const categoryId = req.params.id;
+            const brandId = req.params.id;
 
             // Soft delete by updating `isActive` to false
-            const category = await Category.findOneAndUpdate(
-                { _id: categoryId, isActive: true },
+            const brand = await Brand.findOneAndUpdate(
+                { _id: brandId, isActive: true },
                 { $set: { isActive: false } },
                 { new: true }
             );
 
-            if (!category) {
-                return res.status(HttpStatus.NOT_FOUND).send(
+            if (!brand) {
+                return res.send(
                     services.prepareResponse(
                         HttpStatus.NOT_FOUND,
-                        Msg.CATEGORY_NOT_FOUND
+                        Msg.BRAND_NOT_FOUND
                     )
                 );
             }
-
-            return res.status(HttpStatus.OK).send(
+            return res.send(
                 services.prepareResponse(
-                    HttpStatus.OK,
-                    Msg.CATEGORY_DELETED
+                    HttpStatus.NO_CONTENT,
+                    Msg.BRAND_DELETED
                 )
             );
 

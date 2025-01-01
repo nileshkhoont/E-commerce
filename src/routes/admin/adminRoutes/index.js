@@ -5,5 +5,7 @@ const router = express.Router();
 
 router.use(require("./userRoute"));
 router.use(require("./categoryRoute"));
+router.use(require("./subCategoryRoute"));
+router.use(require("./brandRoute"));
 
 module.exports = router;

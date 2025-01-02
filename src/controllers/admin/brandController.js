@@ -1,6 +1,6 @@
 "use strict";
 
-const Brand = require("../../models/brand");
+const BrandModel = require("../../models/brand");
 const services = require("../../helpers/index");
 const Msg = require("../../helpers/localization");
 const { HttpStatus } = require("../../errors/code");
@@ -20,7 +20,7 @@ module.exports = {
                 return;
             }
 
-            const brandExist = await Brand.findOne({ name: req.body.name });
+            const brandExist = await BrandModel.findOne({ name: req.body.name });
             if (brandExist) {
                 return res.send(
                     services.prepareResponse(
@@ -54,7 +54,7 @@ module.exports = {
                 image: brandImage
             };
 
-            const newBrand = await Brand.create(brandDetail);
+            const newBrand = await BrandModel.create(brandDetail);
             return res.send(
                 services.prepareResponse(
                     HttpStatus.CREATED,
@@ -103,12 +103,12 @@ module.exports = {
                 sort[req.query.sortBy] = req.query.sortOrder === 'desc' ? -1 : 1;
             }
 
-            const list = await Brand.find(query)
+            const list = await BrandModel.find(query)
                 .sort(sort)
                 .skip(skip)
                 .limit(perPage);
         
-            const total = await Brand.countDocuments(query);
+            const total = await BrandModel.countDocuments(query);
             const totalPages = Math.ceil(total / perPage);
 
             return res.send(
@@ -145,13 +145,13 @@ module.exports = {
      */
     updateBrand: async function (req, res) {
         try {
-            if (services.hashValidatorErrors(req, res)) {
+            if (services.hashValidatorErrors(req,res)) {
                 return;
             }
     
             const brandId = req.params.id;
 
-            const brand = await Brand.findById(brandId);
+            const brand = await BrandModel.findById(brandId);
             if (!brand) {
                 return res.send(
                     services.prepareResponse(
@@ -180,7 +180,7 @@ module.exports = {
                 image: imagePath
             };
 
-            const updatedBrand = await Brand.findByIdAndUpdate(
+            const updatedBrand = await BrandModel.findByIdAndUpdate(
                 brandId,
                 brandDetail,
                 { new: true }
@@ -210,16 +210,16 @@ module.exports = {
      * @param {string} req.params.id -The id of the brand
      * @returns Delete brand by id
      */
-    deleteBrand : async function (req,res) {
+    deleteBrand: async function (req,res) {
         try {
-            if (services.hashValidatorErrors(req, res)) {
+            if (services.hashValidatorErrors(req,res)) {
                 return;
             }
 
             const brandId = req.params.id;
 
             // Soft delete by updating `isActive` to false
-            const brand = await Brand.findOneAndUpdate(
+            const brand = await BrandModel.findOneAndUpdate(
                 { _id: brandId, isActive: true },
                 { $set: { isActive: false } },
                 { new: true }

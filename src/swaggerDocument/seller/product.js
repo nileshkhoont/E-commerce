@@ -1,9 +1,9 @@
 /**
  * @swagger
- * /api/admin/add/brand:
+ * /api/seller/add/product:
  *   post:
- *     summary: Add a new brand
- *     tags: [Admin/Brand]
+ *     summary: Add a new product
+ *     tags: [Seller/Product]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -15,10 +15,34 @@
  *             properties:
  *               name:
  *                 type: string
- *                 example: "Nike"
+ *                 example: Running Shoes
+ *               categoryId:
+ *                 type: string
+ *                 example: "60b8d295f9f1b2a7d03c5e6f"
+ *               subCategoryId:
+ *                 type: string
+ *                 example: "60b8d295f9f1b2a7d03c5e70"
+ *               brandId:
+ *                 type: string
+ *                 example: "60b8d295f9f1b2a7d03c5e71"
+ *               price:
+ *                 type: number
+ *                 example: 1000
+ *               description:
+ *                 type: string
+ *                 example: High quality running shoes
  *               image:
  *                 type: string
  *                 format: binary
+ *               size:
+ *                 type: string
+ *                 example: "10"
+ *               color:
+ *                 type: string
+ *                 example: "Red"
+ *               stock:
+ *                 type: integer
+ *                 example: 50
  *     responses:
  *       200:
  *         description: Success
@@ -36,7 +60,7 @@
  *                   properties:
  *                     id:
  *                       type: string
- *                       example: "60b8d295f9f1b2a7d03c5e6f"
+ *                       example: "60b8d295f9f1b2a7d03c5e72"
  *       500:
  *         description: Failed
  *         content:
@@ -52,10 +76,10 @@
 
 /**
  * @swagger
- * /api/admin/list/brand:
+ * /api/seller/list/product:
  *   get:
- *     summary: List all brand
- *     tags: [Admin/Brand]
+ *     summary: Get a list of product
+ *     tags: [Seller/Product]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -107,10 +131,34 @@
  *                         example: "60b8d295f9f1b2a7d03c5e6f"
  *                       name:
  *                         type: string
- *                         example: "Nike"
+ *                         example: Running Shoes
+ *                       categoryId:
+ *                         type: string
+ *                         example: "60b8d295f9f1b2a7d03c5e6f"
+ *                       subCategoryId:
+ *                         type: string
+ *                         example: "60b8d295f9f1b2a7d03c5e70"
+ *                       brandId:
+ *                         type: string
+ *                         example: "60b8d295f9f1b2a7d03c5e71"
+ *                       price:
+ *                         type: number
+ *                         example: 99.99
+ *                       description:
+ *                         type: string
+ *                         example: High quality running shoes
  *                       imageUrl:
  *                         type: string
- *                         example: "http://example.com/images/nike.jpg"
+ *                         example: http://example.com/images/product.jpg
+ *                       size:
+ *                         type: string
+ *                         example: "10"
+ *                       color:
+ *                         type: string
+ *                         example: "Red"
+ *                       stock:
+ *                         type: integer
+ *                         example: 50
  *       500:
  *         description: Failed
  *         content:
@@ -126,10 +174,10 @@
 
 /**
  * @swagger
- * /api/admin/update/brand/{id}:
+ * /api/seller/update/product/{id}:
  *   put:
- *     summary: Update brand detail
- *     tags: [Admin/Brand]
+ *     summary: Update product detail
+ *     tags: [Seller/Product]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -147,10 +195,34 @@
  *             properties:
  *               name:
  *                 type: string
- *                 example: Nike
+ *                 example: Running Shoes
+ *               categoryId:
+ *                 type: string
+ *                 example: "60b8d295f9f1b2a7d03c5e6f"
+ *               subCategoryId:
+ *                 type: string
+ *                 example: "60b8d295f9f1b2a7d03c5e70"
+ *               brandId:
+ *                 type: string
+ *                 example: "60b8d295f9f1b2a7d03c5e71"
+ *               price:
+ *                 type: number
+ *                 example: 99.99
+ *               description:
+ *                 type: string
+ *                 example: High quality running shoes
  *               image:
  *                 type: string
  *                 format: binary
+ *               size:
+ *                 type: string
+ *                 example: "10"
+ *               color:
+ *                 type: string
+ *                 example: "Red"
+ *               stock:
+ *                 type: integer
+ *                 example: 50
  *     responses:
  *       200:
  *         description: Success
@@ -184,10 +256,10 @@
 
 /**
  * @swagger
- * /api/admin/delete/brand/{id}:
+ * /api/seller/delete/product/{id}:
  *   delete:
- *     summary: Delete a brand
- *     tags: [Admin/Brand]
+ *     summary: Delete a product
+ *     tags: [Seller/Product]
  *     security:
  *       - bearerAuth: []
  *     parameters:

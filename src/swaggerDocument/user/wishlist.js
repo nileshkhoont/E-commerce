@@ -1,24 +1,24 @@
 /**
  * @swagger
- * /api/admin/add/brand:
+ * /api/v1/user/add/wishlist:
  *   post:
- *     summary: Add a new brand
- *     tags: [Admin/Brand]
+ *     summary: Add a product to the wishlist
+ *     tags: [User/Wishlist]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               userId:
  *                 type: string
- *                 example: "Nike"
- *               image:
+ *                 example: "60b8d295f9f1b2a7d03c5e71"
+ *               productId:
  *                 type: string
- *                 format: binary
+ *                 example: "60b8d295f9f1b2a7d03c5e6f"
  *     responses:
  *       200:
  *         description: Success
@@ -36,7 +36,7 @@
  *                   properties:
  *                     id:
  *                       type: string
- *                       example: "60b8d295f9f1b2a7d03c5e6f"
+ *                       example: "60b8d295f9f1b2a7d03c5e70"
  *       500:
  *         description: Failed
  *         content:
@@ -46,16 +46,18 @@
  *               properties:
  *                 responseCode:
  *                   type: integer
+ *                   example: 500
  *                 responseMessage:
  *                   type: string
+ *                   example: "Internal Server Error"
  */
 
 /**
  * @swagger
- * /api/admin/list/brand:
+ * /api/v1/user/list/wishlist:
  *   get:
- *     summary: List all brand
- *     tags: [Admin/Brand]
+ *     summary: List all wishlist items for a user
+ *     tags: [User/Wishlist]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -69,22 +71,6 @@
  *         schema:
  *           type: integer
  *           example: 10
- *       - in: query
- *         name: search
- *         schema:
- *           type: string
- *           example: "Nike"
- *       - in: query
- *         name: sortBy
- *         schema:
- *           type: string
- *           example: "name"
- *       - in: query
- *         name: sortOrder
- *         schema:
- *           type: string
- *           enum: [asc, desc]
- *           example: "asc"
  *     responses:
  *       200:
  *         description: Success
@@ -104,13 +90,13 @@
  *                     properties:
  *                       id:
  *                         type: string
+ *                         example: "60b8d295f9f1b2a7d03c5e70"
+ *                       userId:
+ *                         type: string
+ *                         example: "60b8d295f9f1b2a7d03c5e6f" 
+ *                       productId:
+ *                         type: string
  *                         example: "60b8d295f9f1b2a7d03c5e6f"
- *                       name:
- *                         type: string
- *                         example: "Nike"
- *                       imageUrl:
- *                         type: string
- *                         example: "http://example.com/images/nike.jpg"
  *       500:
  *         description: Failed
  *         content:
@@ -126,68 +112,10 @@
 
 /**
  * @swagger
- * /api/admin/update/brand/{id}:
- *   put:
- *     summary: Update brand detail
- *     tags: [Admin/Brand]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *                 example: Nike
- *               image:
- *                 type: string
- *                 format: binary
- *     responses:
- *       200:
- *         description: Success
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 responseCode:
- *                   type: integer
- *                 responseMessage:
- *                   type: string
- *                 responseData:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       example: "60b8d295f9f1b2a7d03c5e6f"
- *       500:
- *         description: Failed
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 responseCode:
- *                   type: integer
- *                 responseMessage:
- *                   type: string
- */
-
-/**
- * @swagger
- * /api/admin/delete/brand/{id}:
+ * /api/v1/user/remove/wishlist/{id}:
  *   delete:
- *     summary: Delete a brand
- *     tags: [Admin/Brand]
+ *     summary: Remove a product from the wishlist
+ *     tags: [User/Wishlist]
  *     security:
  *       - bearerAuth: []
  *     parameters:

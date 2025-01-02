@@ -1,6 +1,6 @@
 "use strict";
 
-const User = require("../../models/auth");
+const UserModel = require("../../models/auth");
 const bcrypt = require("bcryptjs");
 const services = require("../../helpers/index");
 const Msg = require("../../helpers/localization");
@@ -21,13 +21,13 @@ module.exports = {
      * @param {number} req.body.gender -The gender of the user
      * @returns User create and return new user id
      */
-    signUp: async function (req, res) {
+    signUp: async function (req,res) {
         try {
-            if (services.hashValidatorErrors(req, res)) {
+            if (services.hashValidatorErrors(req,res)) {
                 return;
             }
             
-            const emailExist = await User.findOne({ email: req.body.email });
+            const emailExist = await UserModel.findOne({ email: req.body.email });
             if (emailExist) {
                 return res.send(
                     services.prepareResponse(
@@ -48,7 +48,7 @@ module.exports = {
                 gender: req.body.gender,
             };
             
-            const newUser = await User.create(userDetail);
+            const newUser = await UserModel.create(userDetail);
             return res.send(
                 services.prepareResponse(
                     HttpStatus.CREATED,
@@ -74,13 +74,13 @@ module.exports = {
      * @param {string} req.body.password -The password of the user
      * @returns 
      */
-    login: async function (req, res) {
+    login: async function (req,res) {
         try {
-            if (services.hashValidatorErrors(req, res)) {
+            if (services.hashValidatorErrors(req,res)) {
                 return;
             }
 
-            const userLogin = await User.findOne({ email: req.body.email });
+            const userLogin = await UserModel.findOne({ email: req.body.email });
             if (!userLogin) {
                 return res.send(
                     services.prepareResponse(
@@ -126,16 +126,16 @@ module.exports = {
      * @param {string} res.body.newPassword 
      * @returns 
      */
-    updatePassword: async function (req, res) {
+    updatePassword: async function (req,res) {
         try {
-            if (services.hashValidatorErrors(req, res)) {
+            if (services.hashValidatorErrors(req,res)) {
                 return;
             }
 
             const userId = req.authUser.id;
             const { currentPassword, newPassword } = req.body;
-            const user = await User.findById(userId);
 
+            const user = await UserModel.findById(userId);
             if (!user) {
                 return res.send(
                     services.prepareResponse(
@@ -167,7 +167,6 @@ module.exports = {
             )
 
         } catch (error) {
-            console.error(error)
             return res.send(
                 services.prepareResponse(
                     HttpStatus.INTERNAL_SERVER_ERROR,
@@ -185,11 +184,11 @@ module.exports = {
      */
     forgotPassword: async function(req,res) {
         try {
-            if (services.hashValidatorErrors(req, res)) {
+            if (services.hashValidatorErrors(req,res)) {
                 return;
             }
             
-            const user = await User.findOne({ email: req.body.email });
+            const user = await UserModel.findOne({ email: req.body.email });
             if(!user) {
                 return res.send (
                     services.prepareResponse(
@@ -250,7 +249,7 @@ module.exports = {
             const userId = req.authUser.id;
 
             // Soft delete by updating `isDeleted` to true
-            const deleteUser = await User.findOneAndUpdate(
+            const deleteUser = await UserModel.findOneAndUpdate(
                 { _id: userId, isDeleted: false },
                 { $set: { isDeleted: true } },
                 { new: true }

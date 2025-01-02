@@ -34,6 +34,7 @@ const options = {
     apis: [
         "./swaggerDocument/auth/*.js",
         "./swaggerDocument/admin/*.js",
+        "./swaggerDocument/seller/*.js",
         "./swaggerDocument/user/*.js",
     ],
 };

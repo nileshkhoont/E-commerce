@@ -1,9 +1,9 @@
 /**
  * @swagger
- * /api/admin/list/user:
+ * /api/v1/user/list/category:
  *   get:
- *     summary: List all user
- *     tags: [Admin/User]
+ *     summary: List all category
+ *     tags: [User/Category]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -21,12 +21,12 @@
  *         name: search
  *         schema:
  *           type: string
- *           example: "Rahul"
+ *           example: "Casual"
  *       - in: query
  *         name: sortBy
  *         schema:
  *           type: string
- *           example: "firstName"
+ *           example: "name"
  *       - in: query
  *         name: sortOrder
  *         schema:
@@ -48,7 +48,7 @@
  *                 responseData:
  *                   type: object
  *                   properties:
- *                     users:
+ *                     categories:
  *                       type: array
  *                       items:
  *                         type: object
@@ -56,58 +56,9 @@
  *                           id:
  *                             type: string
  *                             example: "60b8d295f9f1b2a7d03c5e6f"
- *                           firstName:
+ *                           name:
  *                             type: string
- *                             example: "John"
- *                           lastName:
- *                             type: string
- *                             example: "Doe"
- *                           email:
- *                             type: string
- *                             example: "john.doe@example.com"
- *                           mobileNumber:
- *                             type: string
- *                             example: "1234567890"
- *       500:
- *         description: Failed
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 responseCode:
- *                   type: integer
- *                 responseMessage:
- *                   type: string
- */
-
-/**
- * @swagger
- * /api/admin/remove/user/{id}:
- *   delete:
- *     summary: Remove user
- *     tags: [Admin/User]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The user ID
- *     responses:
- *       200:
- *         description: Success
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 responseCode:
- *                   type: integer
- *                 responseMessage:
- *                   type: string
+ *                             example: "Footwear"
  *       500:
  *         description: Failed
  *         content:

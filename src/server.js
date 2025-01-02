@@ -21,7 +21,6 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-
 // Swagger documentation setup
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -30,6 +29,9 @@ app.use("/api/v1/auth", require("./routes/auth/authRoute"));
 
 // Admin API Routes
 app.use("/api/admin", require("./routes/admin/adminRoutes"));
+
+// Seller API Routes
+app.use("/api/seller", require("./routes/seller/sellerRoutes"));
 
 // User API Routes
 app.use("/api/v1/user", require("./routes/user/userRoutes"));
@@ -50,4 +52,8 @@ server.listen(process.env.PORT, () => {
 
 module.exports = app;
 
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NzNiZGFjMTdmNTA1NTEzMGU3NDQxZCIsImlhdCI6MTczNTcxMTA0MCwiZXhwIjoxNzQwODk1MDQwfQ.dzmXRpOAsbvhYYdIaS31MvoimMs1BLhGeLwQBBzPtEw
+// admin - eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NzUyZjE3NjUwODY0MDBhZGQ5NmEzYyIsImlhdCI6MTczNTczMzAyMCwiZXhwIjoxNzQwOTE3MDIwfQ.EF9pxrHF6MkiYkpv2HfnkD0pzOXhPJtKgpEZPFv7wrQ
+
+// seller - eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NzUyZjQ4MzFhMmFiYjhiNWFjODU4NCIsImlhdCI6MTczNTczMzA4MSwiZXhwIjoxNzQwOTE3MDgxfQ.s-DeXehkFyuWPQKKsXWm2ye4gS01GLO0z-qhG04-JeU
+
+// user - eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NzUyZmU2YWVlOGYyNjIxM2U2ZGQzYSIsImlhdCI6MTczNTczMzIzMSwiZXhwIjoxNzQwOTE3MjMxfQ.Z-xGO_v_m9KkFlYqtnpfrUZuu3H1TnwgSw6vTc3bkqU

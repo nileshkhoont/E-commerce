@@ -1,6 +1,6 @@
 "use strict";
 
-const User = require("../../models/auth");
+const UserModel = require("../../models/auth");
 const services = require("../../helpers/index");
 const Msg = require("../../helpers/localization");
 const { HttpStatus } = require("../../errors/code");
@@ -17,9 +17,9 @@ module.exports = {
      * @returns Return all user
      *
      */ 
-    listUser: async function (req, res) {
+    listUser: async function (req,res) {
         try {
-            if (services.hashValidatorErrors(req, res)) {
+            if (services.hashValidatorErrors(req,res)) {
                 return;
             }
 
@@ -41,12 +41,12 @@ module.exports = {
                 sort[req.query.sortBy] = req.query.sortOrder === 'desc' ? -1 : 1;
             }
 
-            const list = await User.find(query)
+            const list = await UserModel.find(query)
                 .sort(sort)
                 .skip(skip)
                 .limit(perPage);
             
-            const total = await User.countDocuments(query);
+            const total = await UserModel.countDocuments(query);
             const totalPages = Math.ceil(total / perPage);
 
             return res.send(
@@ -79,16 +79,16 @@ module.exports = {
      * @param {string} req.params.id -The id of the user
      * @returns Delete user detail by id
      */
-    removeUser: async function (req, res) {
+    removeUser: async function (req,res) {
         try {
-            if (services.hashValidatorErrors(req, res)) {
+            if (services.hashValidatorErrors(req,res)) {
                 return;
             }
     
             const userId = req.params.id;
     
             // Soft delete by updating `isDeleted` to true
-            const deleteUser = await User.findOneAndUpdate(
+            const deleteUser = await UserModel.findOneAndUpdate(
                 { _id: userId, isDeleted: false },
                 { $set: { isDeleted: true } },
                 { new: true }

@@ -1,6 +1,6 @@
 "use strict";
 
-const Category = require("../../models/category");
+const CategoryModel = require("../../models/category");
 const services = require("../../helpers/index");
 const Msg = require("../../helpers/localization");
 const { HttpStatus } = require("../../errors/code");
@@ -18,7 +18,7 @@ module.exports = {
                 return;
             }
             
-            const categoryExist = await Category.findOne({ name: req.body.name });
+            const categoryExist = await CategoryModel.findOne({ name: req.body.name });
             if (categoryExist) {
                 return res.send(
                     services.prepareResponse(
@@ -32,7 +32,7 @@ module.exports = {
                 name: req.body.name,
             };
 
-            const newCategory = await Category.create(categoryDetail);
+            const newCategory = await CategoryModel.create(categoryDetail);
             return res.send(
                 services.prepareResponse(
                     HttpStatus.CREATED,
@@ -81,12 +81,12 @@ module.exports = {
                 sort[req.query.sortBy] = req.query.sortOrder === 'desc' ? -1 : 1;
             }
 
-            const list = await Category.find(query)
+            const list = await CategoryModel.find(query)
                 .sort(sort)
                 .skip(skip)
                 .limit(perPage);
             
-            const total = await Category.countDocuments(query);
+            const total = await CategoryModel.countDocuments(query);
             const totalPages = Math.ceil(total / perPage);
 
             return res.send(
@@ -128,7 +128,7 @@ module.exports = {
 
             const categoryId = req.params.id;
 
-            const category = await Category.findById(categoryId);
+            const category = await CategoryModel.findById(categoryId);
             if (!category) {
                 return res.send(
                     services.prepareResponse(
@@ -138,7 +138,7 @@ module.exports = {
                 );
             }
 
-            const updatedCategory = await Category.findByIdAndUpdate(
+            const updatedCategory = await CategoryModel.findByIdAndUpdate(
                 categoryId,
                 { name: req.body.name },
                 { new: true } 
@@ -176,14 +176,14 @@ module.exports = {
             const categoryId = req.params.id;
 
             // Soft delete by updating `isActive` to false
-            const category = await Category.findOneAndUpdate(
+            const category = await CategoryModel.findOneAndUpdate(
                 { _id: categoryId, isActive: true },
                 { $set: { isActive: false } },
                 { new: true }
             );
 
             if (!category) {
-                return res.status(HttpStatus.NOT_FOUND).send(
+                return res.send(
                     services.prepareResponse(
                         HttpStatus.NOT_FOUND,
                         Msg.CATEGORY_NOT_FOUND
@@ -191,7 +191,7 @@ module.exports = {
                 );
             }
 
-            return res.status(HttpStatus.OK).send(
+            return res.send(
                 services.prepareResponse(
                     HttpStatus.OK,
                     Msg.CATEGORY_DELETED

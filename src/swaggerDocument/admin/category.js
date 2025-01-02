@@ -65,7 +65,7 @@
  *         name: perPage
  *         schema:
  *           type: integer
- *           example: 5
+ *           example: 10
  *       - in: query
  *         name: search
  *         schema:

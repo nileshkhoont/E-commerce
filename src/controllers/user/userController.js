@@ -1,6 +1,6 @@
 "use strict";
 
-const User = require("../../models/auth");
+const UserModel = require("../../models/auth");
 const services = require("../../helpers/index");
 const Msg = require("../../helpers/localization");
 const { HttpStatus } = require("../../errors/code");
@@ -12,15 +12,15 @@ module.exports = {
      * @param {string} req.body.userId - user id
      * @return  Detail of user by id
      */
-    getMyProfile: async function (req, res) {
+    getMyProfile: async function (req,res) {
         try {
-            if (services.hashValidatorErrors(req, res)) {
+            if (services.hashValidatorErrors(req,res)) {
                 return;
             }
 
             const userId = req.authUser.id;
 
-            const userInfo = await User.findById(userId);
+            const userInfo = await UserModel.findById(userId);
             if (!userInfo) {
                 return res.send(
                     services.prepareResponse(
@@ -68,7 +68,7 @@ module.exports = {
 
             const userId = req.authUser.id;
 
-            const user = await User.findById(userId);
+            const user = await UserModel.findById(userId);
             if (!user) {
                 return res.send(
                     services.prepareResponse(
@@ -91,7 +91,9 @@ module.exports = {
                 userDetail.password = await services.bcryptPassword(req.body.password);
             }
 
-            const updatedUser = await User.findByIdAndUpdate(userId, userDetail,
+            const updatedUser = await UserModel.findByIdAndUpdate(
+                userId, 
+                userDetail,
                 { new: true, }
             );
             

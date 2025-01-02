@@ -1,9 +1,9 @@
 "use strict";
 
+const SubCategoryModel = require("../../models/subCategory");
 const services = require("../../helpers/index");
 const Msg = require("../../helpers/localization");
 const { HttpStatus } = require("../../errors/code");
-const SubCategory = require("../../models/subCategory");
 
 module.exports = {
     /**
@@ -13,13 +13,13 @@ module.exports = {
      * @param {string} req.body.categoryId -The id of the category
      * @returns subCategory create and return new subCategory id
      */
-    addSubCategory : async function (req,res){
+    addSubCategory: async function (req,res){
         try {
             if (services.hashValidatorErrors(req, res)) {
                 return;
             }
 
-            const subCategoryExist = await SubCategory.findOne({ name: req.body.name });
+            const subCategoryExist = await SubCategoryModel.findOne({ name: req.body.name });
             if (subCategoryExist) {
                 return res.send(
                     services.prepareResponse(
@@ -34,7 +34,7 @@ module.exports = {
                 categoryId: req.body.categoryId
             };
 
-            const newSubCategory = await SubCategory.create(subCategoryDetail);
+            const newSubCategory = await SubCategoryModel.create(subCategoryDetail);
             return res.send(
                 services.prepareResponse(
                     HttpStatus.CREATED,
@@ -83,13 +83,13 @@ module.exports = {
                 sort[req.query.sortBy] = req.query.sortOrder === 'desc' ? -1 : 1;
             }
 
-            const list = await SubCategory.find(query)
+            const list = await SubCategoryModel.find(query)
                 .populate("categoryId", "name -_id")
                 .sort(sort)
                 .skip(skip)
                 .limit(perPage);
 
-            const total = await SubCategory.countDocuments(query);
+            const total = await SubCategoryModel.countDocuments(query);
             const totalPages = Math.ceil(total / perPage);
 
             return res.send(
@@ -126,13 +126,13 @@ module.exports = {
      */
     updateSubCategory: async function (req,res) {
         try {
-            if (services.hashValidatorErrors(req, res)) {
+            if (services.hashValidatorErrors(req,res)) {
                 return;
             }
 
             const subCategoryId = req.params.id;
 
-            const subCategory = await SubCategory.findById(subCategoryId);
+            const subCategory = await SubCategoryModel.findById(subCategoryId);
             if (!subCategory) {
                 return res.send(
                     services.prepareResponse(
@@ -147,7 +147,7 @@ module.exports = {
                 categoryId: req.body.categoryId
             };
 
-            const updatedSubCategory = await SubCategory.findByIdAndUpdate(
+            const updatedSubCategory = await SubCategoryModel.findByIdAndUpdate(
                 subCategoryId,
                 subCategoryDetail,
                 { new: true }
@@ -177,16 +177,16 @@ module.exports = {
      * @param {string} req.params.id -The id of the subCategory
      * @returns Delete subCategory by id
      */
-    deleteSubCategory : async function (req,res) {
+    deleteSubCategory: async function (req,res) {
         try {
-            if (services.hashValidatorErrors(req, res)) {
+            if (services.hashValidatorErrors(req,res)) {
                 return;
             }
 
             const subCategoryId = req.params.id;
 
             // Soft delete by updating `isActive` to false
-            const subCategory = await SubCategory.findOneAndUpdate(
+            const subCategory = await SubCategoryModel.findOneAndUpdate(
                 { _id: subCategoryId, isActive: true },
                 { $set: { isActive: false } },
                 { new: true }

@@ -1,24 +1,36 @@
 /**
  * @swagger
- * /api/admin/add/brand:
+ * /api/v1/user/add/address:
  *   post:
- *     summary: Add a new brand
- *     tags: [Admin/Brand]
+ *     summary: Add a new address
+ *     tags: [User/Address]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               apartmentName:
  *                 type: string
- *                 example: "Nike"
- *               image:
+ *                 example: "Apt 101"
+ *               streetNo:
  *                 type: string
- *                 format: binary
+ *                 example: "1234 Elm Street"
+ *               city:
+ *                 type: string
+ *                 example: "Surat"
+ *               state:
+ *                 type: string
+ *                 example: "Gujarat"
+ *               pinCode:
+ *                 type: string
+ *                 example: "62704"
+ *               country:
+ *                 type: string
+ *                 example: "India"
  *     responses:
  *       200:
  *         description: Success
@@ -36,7 +48,7 @@
  *                   properties:
  *                     id:
  *                       type: string
- *                       example: "60b8d295f9f1b2a7d03c5e6f"
+ *                       example: "6311ec073769bb040d6e99db"
  *       500:
  *         description: Failed
  *         content:
@@ -52,10 +64,10 @@
 
 /**
  * @swagger
- * /api/admin/list/brand:
+ * /api/v1/user/list/address:
  *   get:
- *     summary: List all brand
- *     tags: [Admin/Brand]
+ *     summary: List all address
+ *     tags: [User/Address]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -68,23 +80,7 @@
  *         name: perPage
  *         schema:
  *           type: integer
- *           example: 10
- *       - in: query
- *         name: search
- *         schema:
- *           type: string
- *           example: "Nike"
- *       - in: query
- *         name: sortBy
- *         schema:
- *           type: string
- *           example: "name"
- *       - in: query
- *         name: sortOrder
- *         schema:
- *           type: string
- *           enum: [asc, desc]
- *           example: "asc"
+ *           example: 5
  *     responses:
  *       200:
  *         description: Success
@@ -102,15 +98,27 @@
  *                   items:
  *                     type: object
  *                     properties:
- *                       id:
+ *                       userId:
  *                         type: string
- *                         example: "60b8d295f9f1b2a7d03c5e6f"
- *                       name:
+ *                         example: "60b8d295f9f1b2a7d03c5e6e"
+ *                       apartmentName:
  *                         type: string
- *                         example: "Nike"
- *                       imageUrl:
+ *                         example: "Apt 101"
+ *                       streetNo:
  *                         type: string
- *                         example: "http://example.com/images/nike.jpg"
+ *                         example: "1234 Elm Street"
+ *                       city:
+ *                         type: string
+ *                         example: "Surat"
+ *                       state:
+ *                         type: string
+ *                         example: "Gujarat"
+ *                       postalCode:
+ *                         type: string
+ *                         example: "62704"
+ *                       country:
+ *                         type: string
+ *                         example: "India"
  *       500:
  *         description: Failed
  *         content:
@@ -126,10 +134,73 @@
 
 /**
  * @swagger
- * /api/admin/update/brand/{id}:
+ * /api/v1/user/address/detail/{id}:
+ *   get:
+ *     summary: Get address detail
+ *     tags: [User/Address]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 responseCode:
+ *                   type: integer
+ *                 responseMessage:
+ *                   type: string
+ *                 responseData:
+ *                   type: object
+ *                   properties:
+ *                     userId:
+ *                       type: string
+ *                       example: "60b8d295f9f1b2a7d03c5e6e"
+ *                     apartmentName:
+ *                       type: string
+ *                       example: "Apt 101"
+ *                     streetNo:
+ *                       type: string
+ *                       example: "1234 Elm Street"
+ *                     city:
+ *                       type: string
+ *                       example: "Surat"
+ *                     state:
+ *                       type: string
+ *                       example: "Gujarat"
+ *                     postalCode:
+ *                       type: string
+ *                       example: "62704"
+ *                     country:
+ *                       type: string
+ *                       example: "India"
+ *       500:
+ *         description: Failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 responseCode:
+ *                   type: integer
+ *                 responseMessage:
+ *                   type: string
+ */
+
+/**
+ * @swagger
+ * /api/v1/user/update/address/{id}:
  *   put:
- *     summary: Update brand detail
- *     tags: [Admin/Brand]
+ *     summary: Update address detail
+ *     tags: [User/Address]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -141,16 +212,31 @@
  *     requestBody:
  *       required: true
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               userId:
  *                 type: string
- *                 example: Nike
- *               image:
+ *                 example: "60b8d295f9f1b2a7d03c5e6e"
+ *               apartmentName:
  *                 type: string
- *                 format: binary
+ *                 example: "Apt 101"
+ *               streetNo:
+ *                 type: string
+ *                 example: "1234 Elm Street"
+ *               city:
+ *                 type: string
+ *                 example: "Surat"
+ *               state:
+ *                 type: string
+ *                 example: "Gujarat"
+ *               zipCode:
+ *                 type: string
+ *                 example: "62704"
+ *               country:
+ *                 type: string
+ *                 example: "India"
  *     responses:
  *       200:
  *         description: Success
@@ -168,7 +254,7 @@
  *                   properties:
  *                     id:
  *                       type: string
- *                       example: "60b8d295f9f1b2a7d03c5e6f"
+ *                       example: "60b8d295f9f1b2a7d03c5e6e"
  *       500:
  *         description: Failed
  *         content:
@@ -184,10 +270,10 @@
 
 /**
  * @swagger
- * /api/admin/delete/brand/{id}:
+ * /api/v1/user/delete/address/{id}:
  *   delete:
- *     summary: Delete a brand
- *     tags: [Admin/Brand]
+ *     summary: Delete an address
+ *     tags: [User/Address]
  *     security:
  *       - bearerAuth: []
  *     parameters:

@@ -8,200 +8,75 @@ const Msg = require("../helpers/localization");
 const User = require("../models/auth");
 
 /**
- * Verify jwt token for any user authentication
- * 
- * @param {string} token -Token
- * @return
+ * General function to verify JWT token and authenticate users based on role
+ *
+ * @param {string} role - The role to authenticate (e.g., "Admin", "Seller", "User")
  */
-async function authenticateAnyUser(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) {
-        return res.send(
-            services.prepareResponse(
-                HttpStatus.NOT_FOUND,
-                Msg.TOKEN_REQUIRED
-            )
-        );
-    }
-
-    try {
-        const verifiedToken = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findOne({ _id: verifiedToken.id });
-
-        if (!user) {
+const authenticateRole = (role) => {
+    return async (req, res, next) => {
+        const authHeader = req.headers["authorization"];
+        const token = authHeader && authHeader.split(" ")[1];
+        
+        if (!token) {
             return res.send(
                 services.prepareResponse(
-                    HttpStatus.NOT_FOUND,
-                    Msg.USER_NOT_EXIST
-                )
-            );
-        }
-
-        req.authUser = user;
-
-        switch (user.type) {
-            case 'Admin':
-                authenticateAdmin(req, res, next);
-                break;
-            case 'User': 
-                authenticateUser(req, res, next);
-                break;
-            default:
-                return res.send(
-                    services.prepareResponse(
-                        HttpStatus.UNAUTHORIZED,
-                        Msg.UNAUTHORIZED_ACCESS
-                    )
-                );
-        }
-
-    } catch (error) {
-        return res.send(
-            services.prepareResponse(
-                HttpStatus.UNAUTHORIZED,
-                Msg.INVALID_TOKEN
-            )
-        );
-    }
-};
-
-/**
- * Verify jwt token for admin authentication
- * 
- * @param {string} token -Token
- * @return
- */
-async function authenticateAdmin(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    
-    if (!token) {
-        return res.send(
-            services.prepareResponse(
-                HttpStatus.NOT_FOUND,
-                Msg.TOKEN_REQUIRED
-            )
-        );
-    }
-
-    try {
-        const decodedToken = jwt.decode(token); 
-
-        const currentTimestamp = Date.now() / 1000;
-        if (currentTimestamp > decodedToken.exp) {
-            return res.send(
-                services.prepareResponse(
-                    HttpStatus.UNAUTHORIZED,
-                    Msg.TOKEN_EXPIRED
+                    HttpStatus.NOT_FOUND, 
+                    Msg.TOKEN_REQUIRED
                 )
             );
         }
         
-        const verifiedToken = jwt.verify(token,process.env.JWT_SECRET);
-        const user = await  User.findOne({ _id: verifiedToken.id });
+        try {
+            const decodedToken = jwt.decode(token);
+            const currentTimestamp = Date.now() / 1000;
+            
+            if (currentTimestamp > decodedToken.exp) {
+                return res.send(
+                    services.prepareResponse(
+                        HttpStatus.UNAUTHORIZED, 
+                        Msg.TOKEN_EXPIRED
+                    )
+                );
+            }
+            
+            const verifiedToken = jwt.verify(token, process.env.JWT_SECRET);
+            const user = await User.findOne({ _id: verifiedToken.id });
+            
+            if (!user) {
+                return res.send(
+                    services.prepareResponse(
+                        HttpStatus.NOT_FOUND, 
+                        Msg.USER_NOT_EXIST
+                    )
+                );
+            }
+            
+            if (role && user.type !== role) {
+                return res.send(
+                    services.prepareResponse(
+                        HttpStatus.UNAUTHORIZED, 
+                        Msg.UNAUTHORIZED_ACCESS
+                    )
+                );
+            }
 
-        if (!user) {
+            req.authUser = user;
+            next();
+        
+        } catch (error) {
             return res.send(
                 services.prepareResponse(
-                    HttpStatus.NOT_FOUND,
-                    Msg.USER_NOT_EXIST
+                    HttpStatus.UNAUTHORIZED, 
+                    Msg.INVALID_TOKEN
                 )
             );
         }
-
-        if ((user.type !== "Admin")) {
-            return res.send(
-                services.prepareResponse(
-                    HttpStatus.UNAUTHORIZED,
-                    Msg.UNAUTHORIZED_ACCESS
-                )
-            );
-        }
-
-        req.authUser = user;
-        next();
-
-    } catch (error) {
-        return res.send(
-            services.prepareResponse(
-                HttpStatus.UNAUTHORIZED,
-                Msg.INVALID_TOKEN
-            )
-        );
-    }
-}
-
-/**
- * Verify jwt token for user authentication
- * 
- * @param {string} token -Token
- * @return
- */
-async function authenticateUser(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    
-    if (!token) {
-        return res.send(
-            services.prepareResponse(
-                HttpStatus.NOT_FOUND,
-                Msg.TOKEN_REQUIRED
-            )
-        );
-    }
-
-    try {
-        const decodedToken = jwt.decode(token); 
-
-        const currentTimestamp = Date.now() / 1000;
-        if (currentTimestamp > decodedToken.exp) {
-            return res.send(
-                services.prepareResponse(
-                    HttpStatus.UNAUTHORIZED,
-                    Msg.TOKEN_EXPIRED
-                )
-            );
-        }
-
-        const verifiedToken = jwt.verify(token,process.env.JWT_SECRET);
-        const user = await  User.findOne({ _id: verifiedToken.id });
-
-        if (!user) {
-            return res.send(
-                services.prepareResponse(
-                    HttpStatus.NOT_FOUND,
-                    Msg.USER_NOT_EXIST
-                )
-            );
-        }
-
-        if (user.type !== "User") {
-            return res.send(
-                services.prepareResponse(
-                    HttpStatus.UNAUTHORIZED,
-                    Msg.UNAUTHORIZED_ACCESS
-                )
-            );
-        }
-
-        req.authUser = user;
-        next();
-
-    } catch (error) {
-        return res.send(
-            services.prepareResponse(
-                HttpStatus.UNAUTHORIZED,
-                Msg.INVALID_TOKEN
-            )
-        );
-    }
-}
-
+    };
+};
 
 module.exports = {
-    authenticateAnyUser,
-    authenticateAdmin,
-    authenticateUser 
+    authenticateAnyUser: authenticateRole(),
+    authenticateAdmin: authenticateRole("Admin"),
+    authenticateSeller: authenticateRole("Seller"),
+    authenticateUser: authenticateRole("User"),
 };
